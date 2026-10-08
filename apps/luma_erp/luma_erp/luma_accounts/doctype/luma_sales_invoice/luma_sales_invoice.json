@@ -61,7 +61,7 @@
       "fieldname": "status",
       "fieldtype": "Select",
       "label": "Status",
-      "options": "Draft\nSubmitted\nCancelled",
+      "options": "Draft\nSubmitted\nPartially Paid\nPaid\nCancelled",
       "read_only": 1
     },
     {

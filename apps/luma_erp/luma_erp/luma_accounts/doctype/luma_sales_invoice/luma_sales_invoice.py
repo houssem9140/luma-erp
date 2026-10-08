@@ -19,9 +19,14 @@ class LumaSalesInvoice(Document):
 
 	def before_insert(self) -> None:
 		self.status = "Draft"
+		self.currency = self.currency or "USD"
 		self.outstanding_amount = 0
 
 	def on_submit(self) -> None:
+		self.outstanding_amount = self.total_amount
+		self.status = "Submitted"
+
+	def before_submit(self) -> None:
 		self.outstanding_amount = self.total_amount
 		self.status = "Submitted"
 

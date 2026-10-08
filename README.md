@@ -38,7 +38,8 @@ with automated validation tests. Inventory balances are updated when stock
 entries are submitted and reversed when they are cancelled. Demo data, accounting, and production
 deployment configuration are planned next.
 Customer and supplier invoicing are now included with line totals, invoice
-status, and outstanding amount tracking.
+status, and outstanding amount tracking. Customer receipts and supplier
+payments can now be allocated to submitted invoices.
 
 ## Licensing and attribution
 
