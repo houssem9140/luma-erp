@@ -31,9 +31,10 @@ are created for the database, sites, logs, and queues.
 
 ## Project status
 
-The initial milestone is to validate the Frappe/ERPNext runtime. Luma-specific
-branding, custom modules, demo data, tests, and production deployment
-configuration will be added in subsequent milestones.
+The initial runtime is validated. Luma currently includes master data for
+organizations, customers, suppliers, and items, plus sales and purchase order
+workflows with automated validation tests. Demo data, accounting, inventory,
+and production deployment configuration are planned next.
 
 ## Licensing and attribution
 
