@@ -1,0 +1,95 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "format:SE-{#####}",
+  "creation": "2026-01-01 00:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "entry_type",
+    "organization",
+    "transaction_date",
+    "column_break_1",
+    "source_warehouse",
+    "target_warehouse",
+    "status",
+    "items",
+    "total_quantity"
+  ],
+  "fields": [
+    {
+      "fieldname": "entry_type",
+      "fieldtype": "Select",
+      "label": "Entry Type",
+      "options": "Receipt\nIssue\nTransfer",
+      "reqd": 1
+    },
+    {
+      "fieldname": "organization",
+      "fieldtype": "Link",
+      "label": "Organization",
+      "options": "Luma Organization",
+      "reqd": 1
+    },
+    {
+      "default": "Today",
+      "fieldname": "transaction_date",
+      "fieldtype": "Date",
+      "label": "Transaction Date",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "source_warehouse",
+      "fieldtype": "Link",
+      "label": "Source Warehouse",
+      "options": "Luma Warehouse"
+    },
+    {
+      "fieldname": "target_warehouse",
+      "fieldtype": "Link",
+      "label": "Target Warehouse",
+      "options": "Luma Warehouse"
+    },
+    {
+      "default": "Draft",
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Draft\nSubmitted\nCancelled",
+      "read_only": 1
+    },
+    {
+      "fieldname": "items",
+      "fieldtype": "Table",
+      "label": "Items",
+      "options": "Luma Stock Entry Item",
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "total_quantity",
+      "fieldtype": "Float",
+      "label": "Total Quantity",
+      "read_only": 1
+    }
+  ],
+  "module": "Luma Inventory",
+  "name": "Luma Stock Entry",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1
+}

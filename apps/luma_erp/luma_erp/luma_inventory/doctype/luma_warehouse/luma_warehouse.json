@@ -1,0 +1,69 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "field:warehouse_code",
+  "creation": "2026-01-01 00:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "warehouse_code",
+    "warehouse_name",
+    "organization",
+    "column_break_1",
+    "is_active",
+    "address"
+  ],
+  "fields": [
+    {
+      "fieldname": "warehouse_code",
+      "fieldtype": "Data",
+      "label": "Warehouse Code",
+      "length": 20,
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "warehouse_name",
+      "fieldtype": "Data",
+      "label": "Warehouse Name",
+      "reqd": 1
+    },
+    {
+      "fieldname": "organization",
+      "fieldtype": "Link",
+      "label": "Organization",
+      "options": "Luma Organization",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "default": "1",
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Is Active"
+    },
+    {
+      "fieldname": "address",
+      "fieldtype": "Small Text",
+      "label": "Address"
+    }
+  ],
+  "module": "Luma Inventory",
+  "name": "Luma Warehouse",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1
+}
