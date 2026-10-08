@@ -1,0 +1,52 @@
+{
+  "creation": "2026-01-01 00:00:00.000000",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "item",
+    "description",
+    "qty",
+    "rate",
+    "amount"
+  ],
+  "fields": [
+    {
+      "fieldname": "item",
+      "fieldtype": "Link",
+      "label": "Item",
+      "options": "Luma Item",
+      "reqd": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Data",
+      "label": "Description"
+    },
+    {
+      "default": "1",
+      "fieldname": "qty",
+      "fieldtype": "Float",
+      "label": "Quantity",
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "rate",
+      "fieldtype": "Currency",
+      "label": "Rate",
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "amount",
+      "fieldtype": "Currency",
+      "label": "Amount",
+      "read_only": 1
+    }
+  ],
+  "istable": 1,
+  "module": "Luma Accounts",
+  "name": "Luma Purchase Invoice Item",
+  "permissions": []
+}
