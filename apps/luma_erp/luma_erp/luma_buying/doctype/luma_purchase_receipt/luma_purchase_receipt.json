@@ -1,0 +1,88 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "format:PR-{#####}",
+  "creation": "2026-01-01 00:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "supplier",
+    "organization",
+    "receipt_date",
+    "column_break_1",
+    "warehouse",
+    "status",
+    "stock_entry",
+    "items"
+  ],
+  "fields": [
+    {
+      "fieldname": "supplier",
+      "fieldtype": "Link",
+      "label": "Supplier",
+      "options": "Luma Supplier",
+      "reqd": 1
+    },
+    {
+      "fieldname": "organization",
+      "fieldtype": "Link",
+      "label": "Organization",
+      "options": "Luma Organization",
+      "reqd": 1
+    },
+    {
+      "default": "Today",
+      "fieldname": "receipt_date",
+      "fieldtype": "Date",
+      "label": "Receipt Date",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "warehouse",
+      "fieldtype": "Link",
+      "label": "Warehouse",
+      "options": "Luma Warehouse",
+      "reqd": 1
+    },
+    {
+      "default": "Draft",
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Draft\nSubmitted\nCancelled",
+      "read_only": 1
+    },
+    {
+      "fieldname": "stock_entry",
+      "fieldtype": "Link",
+      "label": "Stock Entry",
+      "options": "Luma Stock Entry",
+      "read_only": 1
+    },
+    {
+      "fieldname": "items",
+      "fieldtype": "Table",
+      "label": "Items",
+      "options": "Luma Purchase Receipt Item",
+      "reqd": 1
+    }
+  ],
+  "module": "Luma Buying",
+  "name": "Luma Purchase Receipt",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

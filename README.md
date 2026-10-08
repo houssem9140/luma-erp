@@ -40,6 +40,8 @@ deployment configuration are planned next.
 Customer and supplier invoicing are now included with line totals, invoice
 status, and outstanding amount tracking. Customer receipts and supplier
 payments can now be allocated to submitted invoices.
+Customer deliveries and supplier receipts now create inventory movements
+automatically when submitted.
 
 ## Licensing and attribution
 
