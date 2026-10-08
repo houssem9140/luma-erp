@@ -9,7 +9,8 @@
     "description",
     "qty",
     "rate",
-    "amount"
+    "amount",
+    "delivered_qty"
   ],
   "fields": [
     {
@@ -43,6 +44,13 @@
       "fieldname": "amount",
       "fieldtype": "Currency",
       "label": "Amount",
+      "read_only": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "delivered_qty",
+      "fieldtype": "Float",
+      "label": "Delivered Quantity",
       "read_only": 1
     }
   ],

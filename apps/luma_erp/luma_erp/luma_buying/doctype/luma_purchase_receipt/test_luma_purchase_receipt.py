@@ -30,6 +30,14 @@ class TestLumaPurchaseReceipt(FrappeTestCase):
 		self.assertEqual(receipt.status, "Submitted")
 		self.assertEqual(
 			frappe.db.get_value(
+				"Luma Purchase Order Item",
+				{"parent": order.name},
+				"received_qty",
+			),
+			4,
+		)
+		self.assertEqual(
+			frappe.db.get_value(
 				"Luma Stock Balance",
 				{"item": item, "warehouse": warehouse},
 				"quantity",

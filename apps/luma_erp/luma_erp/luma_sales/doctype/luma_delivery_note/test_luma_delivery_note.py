@@ -3,6 +3,42 @@ from frappe.tests.utils import FrappeTestCase
 
 
 class TestLumaDeliveryNote(FrappeTestCase):
+	def test_repeated_delivery_cannot_exceed_order(self) -> None:
+		suffix = frappe.generate_hash(length=8).upper()
+		organization, item, customer, warehouse = self._create_setup(suffix)
+		order = frappe.get_doc(
+			{
+				"doctype": "Luma Sales Order",
+				"customer": customer,
+				"organization": organization,
+				"items": [{"item": item, "qty": 2, "rate": 10}],
+			}
+		).insert(ignore_permissions=True)
+		first_delivery = frappe.get_doc(
+			{
+				"doctype": "Luma Delivery Note",
+				"customer": customer,
+				"organization": organization,
+				"sales_order": order.name,
+				"warehouse": warehouse,
+				"items": [{"item": item, "qty": 2}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		first_delivery.submit()
+		second_delivery = frappe.get_doc(
+			{
+				"doctype": "Luma Delivery Note",
+				"customer": customer,
+				"organization": organization,
+				"sales_order": order.name,
+				"warehouse": warehouse,
+				"items": [{"item": item, "qty": 1}],
+			}
+		)
+
+		with self.assertRaises(frappe.ValidationError):
+			second_delivery.validate()
+
 	def test_submit_creates_issue_and_cancel_reverses_it(self) -> None:
 		suffix = frappe.generate_hash(length=8).upper()
 		organization, item, customer, warehouse = self._create_setup(suffix)
@@ -30,6 +66,14 @@ class TestLumaDeliveryNote(FrappeTestCase):
 		self.assertEqual(delivery.status, "Submitted")
 		self.assertEqual(
 			frappe.db.get_value(
+				"Luma Sales Order Item",
+				{"parent": order.name},
+				"delivered_qty",
+			),
+			2,
+		)
+		self.assertEqual(
+			frappe.db.get_value(
 				"Luma Stock Balance",
 				{"item": item, "warehouse": warehouse},
 				"quantity",
@@ -40,6 +84,14 @@ class TestLumaDeliveryNote(FrappeTestCase):
 		delivery.cancel()
 
 		self.assertEqual(delivery.status, "Cancelled")
+		self.assertEqual(
+			frappe.db.get_value(
+				"Luma Sales Order Item",
+				{"parent": order.name},
+				"delivered_qty",
+			),
+			0,
+		)
 		self.assertEqual(
 			frappe.db.get_value(
 				"Luma Stock Balance",

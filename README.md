@@ -43,6 +43,8 @@ payments can now be allocated to submitted invoices.
 Customer deliveries and supplier receipts now create inventory movements
 automatically when submitted, and can be validated against their source
 sales or purchase orders.
+Order lines now track delivered and received quantities so repeated
+fulfillment cannot exceed the original order quantity.
 
 ## Licensing and attribution
 

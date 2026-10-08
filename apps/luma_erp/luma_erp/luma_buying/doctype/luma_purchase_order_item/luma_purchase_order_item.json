@@ -8,7 +8,8 @@
     "description",
     "qty",
     "rate",
-    "amount"
+    "amount",
+    "received_qty"
   ],
   "fields": [
     {
@@ -42,6 +43,13 @@
       "fieldname": "amount",
       "fieldtype": "Currency",
       "label": "Amount",
+      "read_only": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "received_qty",
+      "fieldtype": "Float",
+      "label": "Received Quantity",
       "read_only": 1
     }
   ],
