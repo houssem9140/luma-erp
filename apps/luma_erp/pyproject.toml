@@ -1,0 +1,13 @@
+[project]
+name = "luma-erp"
+version = "0.1.0"
+description = "Business operations and ERP extensions for Luma ERP"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.bench.frappe-dependencies]
+frappe = ">=16.0.0,<17.0.0"

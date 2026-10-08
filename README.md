@@ -1,0 +1,42 @@
+# Luma ERP
+
+Luma ERP is an independent portfolio project built on the Frappe/ERPNext
+technology stack. It will provide a rebranded, documented, and progressively
+customized ERP platform for demonstration purposes.
+
+## Development environment
+
+The local development stack runs with Docker Desktop and includes:
+
+- Frappe and ERPNext
+- MariaDB
+- Redis
+- background workers
+- scheduler and websocket services
+
+Start the disposable development environment from the repository root:
+
+```powershell
+docker compose -f deployment\docker-compose.yml up -d
+```
+
+Open <http://localhost:8080> and sign in with:
+
+- User: `Administrator`
+- Password: `admin`
+
+This compose file is based on the official Frappe Docker disposable setup.
+It is intended for local development only. Persistent named Docker volumes
+are created for the database, sites, logs, and queues.
+
+## Project status
+
+The initial milestone is to validate the Frappe/ERPNext runtime. Luma-specific
+branding, custom modules, demo data, tests, and production deployment
+configuration will be added in subsequent milestones.
+
+## Licensing and attribution
+
+Luma ERP contains code derived from ERPNext and remains subject to the
+GNU General Public License v3. See [LICENSE](LICENSE) and
+[NOTICE.md](NOTICE.md).

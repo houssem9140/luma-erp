@@ -1,0 +1,104 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "field:item_code",
+  "creation": "2026-01-01 00:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "item_code",
+    "item_name",
+    "column_break_1",
+    "item_group",
+    "stock_uom",
+    "is_stock_item",
+    "is_sales_item",
+    "is_purchase_item",
+    "pricing_section",
+    "standard_rate",
+    "description"
+  ],
+  "fields": [
+    {
+      "fieldname": "item_code",
+      "fieldtype": "Data",
+      "label": "Item Code",
+      "length": 30,
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "item_name",
+      "fieldtype": "Data",
+      "label": "Item Name",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "item_group",
+      "fieldtype": "Data",
+      "label": "Item Group",
+      "reqd": 1
+    },
+    {
+      "default": "Unit",
+      "fieldname": "stock_uom",
+      "fieldtype": "Data",
+      "label": "Stock UOM",
+      "reqd": 1
+    },
+    {
+      "default": "1",
+      "fieldname": "is_stock_item",
+      "fieldtype": "Check",
+      "label": "Is Stock Item"
+    },
+    {
+      "default": "1",
+      "fieldname": "is_sales_item",
+      "fieldtype": "Check",
+      "label": "Is Sales Item"
+    },
+    {
+      "default": "1",
+      "fieldname": "is_purchase_item",
+      "fieldtype": "Check",
+      "label": "Is Purchase Item"
+    },
+    {
+      "fieldname": "pricing_section",
+      "fieldtype": "Section Break",
+      "label": "Pricing"
+    },
+    {
+      "default": "0",
+      "fieldname": "standard_rate",
+      "fieldtype": "Currency",
+      "label": "Standard Rate",
+      "non_negative": 1
+    },
+    {
+      "fieldname": "description",
+      "fieldtype": "Text Editor",
+      "label": "Description"
+    }
+  ],
+  "module": "Luma Core",
+  "name": "Luma Item",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1
+}

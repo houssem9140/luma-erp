@@ -1,0 +1,86 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "field:organization_name",
+  "creation": "2026-01-01 00:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "organization_name",
+    "organization_code",
+    "column_break_1",
+    "is_active",
+    "country",
+    "settings_section",
+    "default_currency",
+    "timezone"
+  ],
+  "fields": [
+    {
+      "fieldname": "organization_name",
+      "fieldtype": "Data",
+      "label": "Organization Name",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "organization_code",
+      "fieldtype": "Data",
+      "label": "Organization Code",
+      "length": 12,
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "default": "1",
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "label": "Is Active"
+    },
+    {
+      "fieldname": "country",
+      "fieldtype": "Link",
+      "label": "Country",
+      "options": "Country"
+    },
+    {
+      "fieldname": "settings_section",
+      "fieldtype": "Section Break",
+      "label": "Regional Settings"
+    },
+    {
+      "fieldname": "default_currency",
+      "fieldtype": "Link",
+      "label": "Default Currency",
+      "options": "Currency",
+      "reqd": 1
+    },
+    {
+      "fieldname": "timezone",
+      "fieldtype": "Select",
+      "label": "Timezone",
+      "options": "\nUTC\nEurope/Paris\nAfrica/Casablanca\nAmerica/New_York",
+      "default": "UTC"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "module": "Luma Core",
+  "name": "Luma Organization",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1
+}

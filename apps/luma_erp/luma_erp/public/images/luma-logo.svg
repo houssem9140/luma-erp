@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Luma ERP">
+  <circle cx="32" cy="32" r="30" fill="#2457d6"/>
+  <path d="M19 14v29c0 5 3 8 8 8h18v-8H29V14z" fill="#fff"/>
+  <circle cx="44" cy="18" r="5" fill="#8ee6d2"/>
+</svg>
