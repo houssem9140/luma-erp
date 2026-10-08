@@ -34,7 +34,8 @@ are created for the database, sites, logs, and queues.
 The initial runtime is validated. Luma currently includes master data for
 organizations, customers, suppliers, and items, plus sales and purchase order
 workflows and an inventory foundation for warehouses and stock entries, all
-with automated validation tests. Demo data, accounting, and production
+with automated validation tests. Inventory balances are updated when stock
+entries are submitted and reversed when they are cancelled. Demo data, accounting, and production
 deployment configuration are planned next.
 
 ## Licensing and attribution
