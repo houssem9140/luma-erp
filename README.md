@@ -41,7 +41,8 @@ Customer and supplier invoicing are now included with line totals, invoice
 status, and outstanding amount tracking. Customer receipts and supplier
 payments can now be allocated to submitted invoices.
 Customer deliveries and supplier receipts now create inventory movements
-automatically when submitted.
+automatically when submitted, and can be validated against their source
+sales or purchase orders.
 
 ## Licensing and attribution
 

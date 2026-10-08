@@ -8,6 +8,7 @@
   "field_order": [
     "supplier",
     "organization",
+    "purchase_order",
     "receipt_date",
     "column_break_1",
     "warehouse",
@@ -29,6 +30,12 @@
       "label": "Organization",
       "options": "Luma Organization",
       "reqd": 1
+    },
+    {
+      "fieldname": "purchase_order",
+      "fieldtype": "Link",
+      "label": "Purchase Order",
+      "options": "Luma Purchase Order"
     },
     {
       "default": "Today",

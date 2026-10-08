@@ -8,10 +8,24 @@ class LumaPurchaseReceipt(Document):
 			frappe.throw("A purchase receipt must contain at least one item.")
 		if not self.warehouse:
 			frappe.throw("A purchase receipt requires a warehouse.")
+		if self.purchase_order:
+			order = frappe.get_doc("Luma Purchase Order", self.purchase_order)
+			if order.supplier != self.supplier or order.organization != self.organization:
+				frappe.throw("Receipt supplier and organization must match the purchase order.")
 
 		for item in self.items:
 			if item.qty <= 0:
 				frappe.throw("Receipt quantity must be greater than zero.")
+			if self.purchase_order:
+				ordered_qty = sum(
+					order_item.qty
+					for order_item in order.items
+					if order_item.item == item.item
+				)
+				if item.qty > ordered_qty:
+					frappe.throw(
+						f"Receipt quantity for {item.item} exceeds the purchase order."
+					)
 
 	def before_insert(self) -> None:
 		self.status = "Draft"

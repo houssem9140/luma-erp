@@ -6,11 +6,20 @@ class TestLumaPurchaseReceipt(FrappeTestCase):
 	def test_submit_creates_receipt_stock(self) -> None:
 		suffix = frappe.generate_hash(length=8).upper()
 		organization, item, supplier, warehouse = self._create_setup(suffix)
+		order = frappe.get_doc(
+			{
+				"doctype": "Luma Purchase Order",
+				"supplier": supplier,
+				"organization": organization,
+				"items": [{"item": item, "qty": 4, "rate": 8}],
+			}
+		).insert(ignore_permissions=True)
 		receipt = frappe.get_doc(
 			{
 				"doctype": "Luma Purchase Receipt",
 				"supplier": supplier,
 				"organization": organization,
+				"purchase_order": order.name,
 				"warehouse": warehouse,
 				"items": [{"item": item, "qty": 4}],
 			}

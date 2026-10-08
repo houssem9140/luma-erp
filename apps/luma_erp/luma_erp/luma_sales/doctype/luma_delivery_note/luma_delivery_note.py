@@ -8,10 +8,24 @@ class LumaDeliveryNote(Document):
 			frappe.throw("A delivery note must contain at least one item.")
 		if not self.warehouse:
 			frappe.throw("A delivery note requires a warehouse.")
+		if self.sales_order:
+			order = frappe.get_doc("Luma Sales Order", self.sales_order)
+			if order.customer != self.customer or order.organization != self.organization:
+				frappe.throw("Delivery customer and organization must match the sales order.")
 
 		for item in self.items:
 			if item.qty <= 0:
 				frappe.throw("Delivery quantity must be greater than zero.")
+			if self.sales_order:
+				ordered_qty = sum(
+					order_item.qty
+					for order_item in order.items
+					if order_item.item == item.item
+				)
+				if item.qty > ordered_qty:
+					frappe.throw(
+						f"Delivery quantity for {item.item} exceeds the sales order."
+					)
 
 	def before_insert(self) -> None:
 		self.status = "Draft"

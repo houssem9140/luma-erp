@@ -6,11 +6,20 @@ class TestLumaDeliveryNote(FrappeTestCase):
 	def test_submit_creates_issue_and_cancel_reverses_it(self) -> None:
 		suffix = frappe.generate_hash(length=8).upper()
 		organization, item, customer, warehouse = self._create_setup(suffix)
+		order = frappe.get_doc(
+			{
+				"doctype": "Luma Sales Order",
+				"customer": customer,
+				"organization": organization,
+				"items": [{"item": item, "qty": 2, "rate": 10}],
+			}
+		).insert(ignore_permissions=True)
 		delivery = frappe.get_doc(
 			{
 				"doctype": "Luma Delivery Note",
 				"customer": customer,
 				"organization": organization,
+				"sales_order": order.name,
 				"warehouse": warehouse,
 				"items": [{"item": item, "qty": 2}],
 			}

@@ -8,6 +8,7 @@
   "field_order": [
     "customer",
     "organization",
+    "sales_order",
     "delivery_date",
     "column_break_1",
     "warehouse",
@@ -29,6 +30,12 @@
       "label": "Organization",
       "options": "Luma Organization",
       "reqd": 1
+    },
+    {
+      "fieldname": "sales_order",
+      "fieldtype": "Link",
+      "label": "Sales Order",
+      "options": "Luma Sales Order"
     },
     {
       "default": "Today",
