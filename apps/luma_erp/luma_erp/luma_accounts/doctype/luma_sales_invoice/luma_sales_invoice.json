@@ -1,0 +1,103 @@
+{
+  "actions": [],
+  "allow_rename": 1,
+  "autoname": "format:SI-{#####}",
+  "creation": "2026-01-01 00:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "customer",
+    "organization",
+    "posting_date",
+    "due_date",
+    "column_break_1",
+    "currency",
+    "status",
+    "items",
+    "total_amount",
+    "outstanding_amount"
+  ],
+  "fields": [
+    {
+      "fieldname": "customer",
+      "fieldtype": "Link",
+      "label": "Customer",
+      "options": "Luma Customer",
+      "reqd": 1
+    },
+    {
+      "fieldname": "organization",
+      "fieldtype": "Link",
+      "label": "Organization",
+      "options": "Luma Organization",
+      "reqd": 1
+    },
+    {
+      "default": "Today",
+      "fieldname": "posting_date",
+      "fieldtype": "Date",
+      "label": "Posting Date",
+      "reqd": 1
+    },
+    {
+      "fieldname": "due_date",
+      "fieldtype": "Date",
+      "label": "Due Date"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "default": "USD",
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "options": "Currency",
+      "reqd": 1
+    },
+    {
+      "default": "Draft",
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "label": "Status",
+      "options": "Draft\nSubmitted\nCancelled",
+      "read_only": 1
+    },
+    {
+      "fieldname": "items",
+      "fieldtype": "Table",
+      "label": "Items",
+      "options": "Luma Sales Invoice Item",
+      "reqd": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "total_amount",
+      "fieldtype": "Currency",
+      "label": "Total Amount",
+      "read_only": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "outstanding_amount",
+      "fieldtype": "Currency",
+      "label": "Outstanding Amount",
+      "read_only": 1
+    }
+  ],
+  "module": "Luma Accounts",
+  "name": "Luma Sales Invoice",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "create": 1,
+      "delete": 1,
+      "read": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "track_changes": 1
+}

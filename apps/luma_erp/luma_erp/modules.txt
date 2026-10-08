@@ -2,3 +2,4 @@ Luma Core
 Luma Sales
 Luma Buying
 Luma Inventory
+Luma Accounts

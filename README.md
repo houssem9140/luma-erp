@@ -37,6 +37,8 @@ workflows and an inventory foundation for warehouses and stock entries, all
 with automated validation tests. Inventory balances are updated when stock
 entries are submitted and reversed when they are cancelled. Demo data, accounting, and production
 deployment configuration are planned next.
+Customer invoicing is now included with line totals, invoice status, and
+outstanding amount tracking.
 
 ## Licensing and attribution
 
