@@ -12,6 +12,7 @@
     "column_break_1",
     "currency",
     "amount",
+    "journal_entry",
     "status",
     "reference_doctype",
     "reference_name"
@@ -56,6 +57,13 @@
       "fieldtype": "Currency",
       "label": "Amount",
       "reqd": 1
+    },
+    {
+      "fieldname": "journal_entry",
+      "fieldtype": "Link",
+      "label": "Journal Entry",
+      "options": "Luma Journal Entry",
+      "read_only": 1
     },
     {
       "default": "Draft",

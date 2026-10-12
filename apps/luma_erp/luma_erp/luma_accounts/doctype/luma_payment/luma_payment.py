@@ -1,6 +1,8 @@
 import frappe
 from frappe.model.document import Document
 
+from luma_erp.luma_accounts.accounting import cancel_entry, create_payment_entry
+
 
 class LumaPayment(Document):
 	def validate(self) -> None:
@@ -37,6 +39,7 @@ class LumaPayment(Document):
 			update_modified=True,
 		)
 		self.status = "Submitted"
+		self.journal_entry = create_payment_entry(self)
 
 	def on_cancel(self) -> None:
 		invoice = frappe.get_doc(self.reference_doctype, self.reference_name)
@@ -49,4 +52,5 @@ class LumaPayment(Document):
 			},
 			update_modified=True,
 		)
+		cancel_entry(self.journal_entry)
 		self.status = "Cancelled"

@@ -44,6 +44,11 @@ class TestLumaSalesInvoice(FrappeTestCase):
 
 		self.assertEqual(invoice.outstanding_amount, 50)
 		self.assertEqual(invoice.status, "Submitted")
+		self.assertTrue(frappe.db.exists("Luma Journal Entry", invoice.journal_entry))
+		self.assertEqual(
+			frappe.db.get_value("Luma Journal Entry", invoice.journal_entry, "total_debit"),
+			50,
+		)
 
 	def test_delivery_note_quantity_is_tracked_as_invoiced(self) -> None:
 		delivery = frappe.get_doc(

@@ -1,6 +1,8 @@
 import frappe
 from frappe.model.document import Document
 
+from luma_erp.luma_accounts.accounting import cancel_entry, create_invoice_entry
+
 
 class LumaPurchaseInvoice(Document):
 	def validate(self) -> None:
@@ -29,6 +31,7 @@ class LumaPurchaseInvoice(Document):
 		self.outstanding_amount = self.total_amount
 		self.status = "Submitted"
 		self._update_receipt_quantities(1)
+		self.journal_entry = create_invoice_entry(self, "purchase")
 
 	def before_submit(self) -> None:
 		self.outstanding_amount = self.total_amount
@@ -36,6 +39,7 @@ class LumaPurchaseInvoice(Document):
 
 	def on_cancel(self) -> None:
 		self._update_receipt_quantities(-1)
+		cancel_entry(self.journal_entry)
 		self.outstanding_amount = 0
 		self.status = "Cancelled"
 
