@@ -1,7 +1,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
-from luma_erp.api import get_invoice_summary, make_purchase_invoice, make_sales_invoice
+from luma_erp.api import get_invoice_summary, get_ledger, make_purchase_invoice, make_sales_invoice
 
 
 class TestLumaInvoiceGeneration(FrappeTestCase):
@@ -104,6 +104,27 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 		self.assertEqual(summary["sales"]["draft"], 1)
 		self.assertEqual(summary["sales"]["total_amount"], 24)
 		self.assertEqual(summary["sales"]["outstanding_amount"], 0)
+
+	def test_ledger_returns_balanced_submitted_lines(self) -> None:
+		organization, _item, _customer, _supplier = self._create_master_data("API Ledger")
+		entry = frappe.get_doc(
+			{
+				"doctype": "Luma Journal Entry",
+				"organization": organization,
+				"accounts": [
+					{"account": "Cash", "debit": 80},
+					{"account": "Sales", "credit": 80},
+				],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		entry.submit()
+
+		ledger = get_ledger(organization)
+
+		self.assertEqual(len(ledger["lines"]), 2)
+		self.assertEqual(ledger["total_debit"], 80)
+		self.assertEqual(ledger["total_credit"], 80)
+		self.assertTrue(ledger["balanced"])
 
 	def _create_master_data(self, label: str) -> tuple[str, str, str, str]:
 		suffix = frappe.generate_hash(length=8).upper()

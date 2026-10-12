@@ -123,3 +123,50 @@ def _summarize_invoices(doctype: str, filters: dict[str, str]) -> dict:
 		summary["total_amount"] += float(invoice.total_amount or 0)
 		summary["outstanding_amount"] += float(invoice.outstanding_amount or 0)
 	return summary
+
+
+@frappe.whitelist(allow_guest=False)
+def get_ledger(organization: str, account: str | None = None, limit: int = 100) -> dict:
+	"""Return submitted journal lines and totals for one organization."""
+	if limit < 1 or limit > 500:
+		frappe.throw("Ledger limit must be between 1 and 500.")
+
+	filters = {"organization": organization, "docstatus": 1}
+	entries = frappe.get_list(
+		"Luma Journal Entry",
+		filters=filters,
+		fields=["name", "posting_date", "currency", "reference_type", "reference_name"],
+		order_by="posting_date desc, creation desc",
+		limit=limit,
+	)
+	lines = []
+	total_debit = 0.0
+	total_credit = 0.0
+	for entry in entries:
+		journal = frappe.get_doc("Luma Journal Entry", entry.name)
+		for line in journal.accounts:
+			if account and line.account != account:
+				continue
+			debit = float(line.debit or 0)
+			credit = float(line.credit or 0)
+			lines.append(
+				{
+					"journal_entry": entry.name,
+					"posting_date": entry.posting_date,
+					"account": line.account,
+					"debit": debit,
+					"credit": credit,
+					"currency": entry.currency,
+					"reference_type": entry.reference_type,
+					"reference_name": entry.reference_name,
+				}
+			)
+			total_debit += debit
+			total_credit += credit
+
+	return {
+		"lines": lines,
+		"total_debit": total_debit,
+		"total_credit": total_credit,
+		"balanced": total_debit == total_credit,
+	}
