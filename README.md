@@ -49,6 +49,8 @@ Invoices can be linked to submitted deliveries or receipts and track the
 quantity already invoiced to prevent duplicate billing.
 Draft sales and purchase invoices can also be generated directly from
 submitted deliveries and receipts.
+The repository includes a GitHub Actions workflow that starts the disposable
+Frappe stack and runs the complete Luma test suite on pushes and pull requests.
 
 ## Licensing and attribution
 
