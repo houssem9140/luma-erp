@@ -3,6 +3,8 @@ from frappe.tests.utils import FrappeTestCase
 
 from luma_erp.api import (
 	get_customer_statement,
+	get_payables_aging,
+	get_receivables_aging,
 	get_invoice_summary,
 	get_ledger,
 	get_operations_summary,
@@ -231,6 +233,35 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 
 		self.assertEqual(statement["transactions"], [])
 		self.assertEqual(statement["outstanding_amount"], 0)
+
+	def test_receivables_aging_groups_outstanding_invoice(self) -> None:
+		organization, item, customer, _supplier = self._create_master_data("API Aging")
+		invoice = frappe.get_doc(
+			{
+				"doctype": "Luma Sales Invoice",
+				"customer": customer,
+				"organization": organization,
+				"currency": "USD",
+				"posting_date": "2026-08-01",
+				"due_date": "2026-08-15",
+				"items": [{"item": item, "qty": 1, "rate": 75}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		invoice.submit()
+
+		report = get_receivables_aging(organization, "2026-10-12")
+
+		self.assertEqual(report["buckets"]["31_60"], 75)
+		self.assertEqual(report["total_outstanding"], 75)
+		self.assertEqual(report["invoices"][0]["days_overdue"], 58)
+
+	def test_payables_aging_has_no_rows_without_outstanding_invoices(self) -> None:
+		organization, _item, _customer, supplier = self._create_master_data("API Payables Aging")
+
+		report = get_payables_aging(organization, "2026-10-12")
+
+		self.assertEqual(report["invoices"], [])
+		self.assertEqual(report["total_outstanding"], 0)
 
 	def _create_master_data(self, label: str) -> tuple[str, str, str, str]:
 		suffix = frappe.generate_hash(length=8).upper()

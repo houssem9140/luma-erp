@@ -62,6 +62,8 @@ Authenticated API endpoints provide invoice summaries, ledger lines, and
 organization-scoped inventory, order, ledger, and trial-balance summaries.
 Customer and supplier statement endpoints show invoiced amounts, payments,
 running balances, and outstanding amounts.
+Receivables and payables aging endpoints group outstanding invoices by due
+date into current, 1-30, 31-60, 61-90, and over-90-day buckets.
 
 ## Licensing and attribution
 

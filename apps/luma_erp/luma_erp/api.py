@@ -1,6 +1,7 @@
 """Public API endpoints for Luma ERP."""
 
 import frappe
+from frappe.utils import getdate, today
 
 
 @frappe.whitelist(allow_guest=False)
@@ -259,6 +260,77 @@ def get_supplier_statement(supplier: str, organization: str | None = None) -> di
 		organization=organization,
 		payment_type="Pay",
 	)
+
+
+@frappe.whitelist(allow_guest=False)
+def get_receivables_aging(organization: str, as_of: str | None = None) -> dict:
+	"""Group outstanding sales invoices into due-date aging buckets."""
+	return _get_aging_report(
+		doctype="Luma Sales Invoice",
+		party_field="customer",
+		organization=organization,
+		as_of=as_of,
+	)
+
+
+@frappe.whitelist(allow_guest=False)
+def get_payables_aging(organization: str, as_of: str | None = None) -> dict:
+	"""Group outstanding purchase invoices into due-date aging buckets."""
+	return _get_aging_report(
+		doctype="Luma Purchase Invoice",
+		party_field="supplier",
+		organization=organization,
+		as_of=as_of,
+	)
+
+
+def _get_aging_report(
+	doctype: str,
+	party_field: str,
+	organization: str,
+	as_of: str | None,
+) -> dict:
+	as_of_date = getdate(as_of or today())
+	invoices = frappe.get_list(
+		doctype,
+		filters={
+			"organization": organization,
+			"status": ["in", ["Submitted", "Partially Paid"]],
+			"outstanding_amount": [">", 0],
+		},
+		fields=["name", party_field, "posting_date", "due_date", "currency", "outstanding_amount"],
+		limit=0,
+	)
+	buckets = {"current": 0.0, "1_30": 0.0, "31_60": 0.0, "61_90": 0.0, "over_90": 0.0}
+	rows = []
+	for invoice in invoices:
+		due_date = getdate(invoice.due_date or invoice.posting_date)
+		days_overdue = max((as_of_date - due_date).days, 0)
+		bucket = "current" if days_overdue == 0 else _aging_bucket(days_overdue)
+		amount = float(invoice.outstanding_amount or 0)
+		buckets[bucket] += amount
+		rows.append(
+			{
+				"name": invoice.name,
+				"party": invoice.get(party_field),
+				"due_date": due_date,
+				"days_overdue": days_overdue,
+				"bucket": bucket,
+				"outstanding_amount": amount,
+				"currency": invoice.currency,
+			}
+		)
+	return {"as_of": as_of_date, "buckets": buckets, "total_outstanding": sum(buckets.values()), "invoices": rows}
+
+
+def _aging_bucket(days_overdue: int) -> str:
+	if days_overdue <= 30:
+		return "1_30"
+	if days_overdue <= 60:
+		return "31_60"
+	if days_overdue <= 90:
+		return "61_90"
+	return "over_90"
 
 
 def _get_party_statement(
