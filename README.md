@@ -56,6 +56,8 @@ For local demonstrations, seed the standard master data with:
 ```powershell
 docker exec deployment-backend-1 bench --site frontend execute luma_erp.demo.seed_demo_data
 ```
+Luma Accounts also provides balanced journal entries with draft, submitted,
+and cancelled lifecycle states.
 
 ## Licensing and attribution
 

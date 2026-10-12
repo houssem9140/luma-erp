@@ -30,6 +30,7 @@ ROLE_PERMISSIONS = {
 		"Luma Sales Invoice",
 		"Luma Purchase Invoice",
 		"Luma Payment",
+		"Luma Journal Entry",
 	],
 }
 
