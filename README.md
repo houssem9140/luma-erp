@@ -60,6 +60,8 @@ Luma Accounts also provides balanced journal entries with draft, submitted,
 and cancelled lifecycle states.
 Authenticated API endpoints provide invoice summaries, ledger lines, and
 organization-scoped inventory, order, ledger, and trial-balance summaries.
+Customer and supplier statement endpoints show invoiced amounts, payments,
+running balances, and outstanding amounts.
 
 ## Licensing and attribution
 

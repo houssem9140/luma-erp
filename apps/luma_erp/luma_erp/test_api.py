@@ -2,9 +2,11 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 
 from luma_erp.api import (
+	get_customer_statement,
 	get_invoice_summary,
 	get_ledger,
 	get_operations_summary,
+	get_supplier_statement,
 	get_trial_balance,
 	make_purchase_invoice,
 	make_sales_invoice,
@@ -189,6 +191,46 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 		self.assertEqual(balance["total_debit"], 100)
 		self.assertEqual(balance["total_credit"], 100)
 		self.assertTrue(balance["balanced"])
+
+	def test_customer_statement_tracks_invoice_and_payment(self) -> None:
+		organization, item, customer, _supplier = self._create_master_data("API Customer Statement")
+		invoice = frappe.get_doc(
+			{
+				"doctype": "Luma Sales Invoice",
+				"customer": customer,
+				"organization": organization,
+				"currency": "USD",
+				"items": [{"item": item, "qty": 2, "rate": 30}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		invoice.submit()
+		payment = frappe.get_doc(
+			{
+				"doctype": "Luma Payment",
+				"payment_type": "Receive",
+				"organization": organization,
+				"currency": "USD",
+				"amount": 20,
+				"reference_doctype": "Luma Sales Invoice",
+				"reference_name": invoice.name,
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		payment.submit()
+
+		statement = get_customer_statement(customer, organization)
+
+		self.assertEqual(statement["total_invoiced"], 60)
+		self.assertEqual(statement["total_paid"], 20)
+		self.assertEqual(statement["outstanding_amount"], 40)
+		self.assertEqual(len(statement["transactions"]), 2)
+
+	def test_empty_supplier_statement_is_supported(self) -> None:
+		organization, _item, _customer, supplier = self._create_master_data("API Supplier Statement")
+
+		statement = get_supplier_statement(supplier, organization)
+
+		self.assertEqual(statement["transactions"], [])
+		self.assertEqual(statement["outstanding_amount"], 0)
 
 	def _create_master_data(self, label: str) -> tuple[str, str, str, str]:
 		suffix = frappe.generate_hash(length=8).upper()

@@ -38,8 +38,11 @@ class LumaPayment(Document):
 			},
 			update_modified=True,
 		)
-		self.status = "Submitted"
 		self.journal_entry = create_payment_entry(self)
+		self.db_set(
+			{"status": "Submitted", "journal_entry": self.journal_entry},
+			update_modified=True,
+		)
 
 	def on_cancel(self) -> None:
 		invoice = frappe.get_doc(self.reference_doctype, self.reference_name)
@@ -53,4 +56,4 @@ class LumaPayment(Document):
 			update_modified=True,
 		)
 		cancel_entry(self.journal_entry)
-		self.status = "Cancelled"
+		self.db_set("status", "Cancelled", update_modified=True)

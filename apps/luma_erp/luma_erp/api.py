@@ -237,6 +237,102 @@ def get_trial_balance(organization: str) -> dict:
 	}
 
 
+@frappe.whitelist(allow_guest=False)
+def get_customer_statement(customer: str, organization: str | None = None) -> dict:
+	"""Return submitted customer invoices and receipts with a running balance."""
+	return _get_party_statement(
+		party_doctype="Luma Sales Invoice",
+		party_field="customer",
+		party=customer,
+		organization=organization,
+		payment_type="Receive",
+	)
+
+
+@frappe.whitelist(allow_guest=False)
+def get_supplier_statement(supplier: str, organization: str | None = None) -> dict:
+	"""Return submitted supplier invoices and payments with a running balance."""
+	return _get_party_statement(
+		party_doctype="Luma Purchase Invoice",
+		party_field="supplier",
+		party=supplier,
+		organization=organization,
+		payment_type="Pay",
+	)
+
+
+def _get_party_statement(
+	party_doctype: str,
+	party_field: str,
+	party: str,
+	organization: str | None,
+	payment_type: str,
+) -> dict:
+	invoice_filters = {party_field: party, "status": ["in", ["Submitted", "Partially Paid", "Paid"]]}
+	if organization:
+		invoice_filters["organization"] = organization
+	invoices = frappe.get_list(
+		party_doctype,
+		filters=invoice_filters,
+		fields=["name", "posting_date", "currency", "total_amount"],
+		limit=0,
+	)
+	invoice_names = [invoice.name for invoice in invoices]
+	payments = (
+		frappe.get_list(
+			"Luma Payment",
+			filters={
+				"payment_type": payment_type,
+				"reference_doctype": party_doctype,
+				"reference_name": ["in", invoice_names],
+				"status": "Submitted",
+			},
+			fields=["name", "posting_date", "currency", "amount", "reference_name"],
+			limit=0,
+		)
+		if invoice_names
+		else []
+	)
+
+	transactions = [
+		{
+			"date": invoice.posting_date,
+			"doctype": party_doctype,
+			"name": invoice.name,
+			"debit": float(invoice.total_amount or 0),
+			"credit": 0.0,
+			"currency": invoice.currency,
+		}
+		for invoice in invoices
+	]
+	transactions.extend(
+		{
+			"date": payment.posting_date,
+			"doctype": "Luma Payment",
+			"name": payment.name,
+			"reference_name": payment.reference_name,
+			"debit": 0.0,
+			"credit": float(payment.amount or 0),
+			"currency": payment.currency,
+		}
+		for payment in payments
+	)
+	transactions.sort(key=lambda transaction: (str(transaction["date"]), transaction["name"]))
+
+	balance = 0.0
+	for transaction in transactions:
+		balance += transaction["debit"] - transaction["credit"]
+		transaction["balance"] = balance
+
+	return {
+		"party": party,
+		"transactions": transactions,
+		"total_invoiced": sum(transaction["debit"] for transaction in transactions),
+		"total_paid": sum(transaction["credit"] for transaction in transactions),
+		"outstanding_amount": balance,
+	}
+
+
 def _status_summary(doctype: str, organization: str) -> dict[str, int]:
 	documents = frappe.get_list(
 		doctype,
