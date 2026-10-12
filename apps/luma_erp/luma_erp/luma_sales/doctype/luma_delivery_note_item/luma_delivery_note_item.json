@@ -3,7 +3,7 @@
   "doctype": "DocType",
   "editable_grid": 1,
   "engine": "InnoDB",
-  "field_order": ["item", "qty", "uom"],
+  "field_order": ["item", "qty", "uom", "invoiced_qty"],
   "fields": [
     {
       "fieldname": "item",
@@ -24,6 +24,13 @@
       "fieldname": "uom",
       "fieldtype": "Data",
       "label": "UOM"
+    },
+    {
+      "default": "0",
+      "fieldname": "invoiced_qty",
+      "fieldtype": "Float",
+      "label": "Invoiced Quantity",
+      "read_only": 1
     }
   ],
   "istable": 1,

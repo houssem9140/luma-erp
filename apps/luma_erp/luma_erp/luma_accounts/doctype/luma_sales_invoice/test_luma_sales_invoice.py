@@ -44,3 +44,35 @@ class TestLumaSalesInvoice(FrappeTestCase):
 
 		self.assertEqual(invoice.outstanding_amount, 50)
 		self.assertEqual(invoice.status, "Submitted")
+
+	def test_delivery_note_quantity_is_tracked_as_invoiced(self) -> None:
+		delivery = frappe.get_doc(
+			{
+				"doctype": "Luma Delivery Note",
+				"customer": "CUST001",
+				"organization": "Demo Organization",
+				"warehouse": "MAIN01",
+				"items": [{"item": "ITEM001", "qty": 2}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		delivery.db_set("status", "Submitted")
+
+		invoice = frappe.get_doc(
+			{
+				"doctype": "Luma Sales Invoice",
+				"customer": "CUST001",
+				"organization": "Demo Organization",
+				"delivery_note": delivery.name,
+				"items": [{"item": "ITEM001", "qty": 2, "rate": 25}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		invoice.submit()
+
+		self.assertEqual(
+			frappe.db.get_value(
+				"Luma Delivery Note Item",
+				{"parent": delivery.name},
+				"invoiced_qty",
+			),
+			2,
+		)

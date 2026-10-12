@@ -45,6 +45,8 @@ automatically when submitted, and can be validated against their source
 sales or purchase orders.
 Order lines now track delivered and received quantities so repeated
 fulfillment cannot exceed the original order quantity.
+Invoices can be linked to submitted deliveries or receipts and track the
+quantity already invoiced to prevent duplicate billing.
 
 ## Licensing and attribution
 

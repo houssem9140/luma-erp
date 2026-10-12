@@ -17,6 +17,9 @@ class LumaSalesInvoice(Document):
 			item.amount = item.qty * item.rate
 			self.total_amount += item.amount
 
+		if self.delivery_note:
+			self._validate_delivery_note()
+
 	def before_insert(self) -> None:
 		self.status = "Draft"
 		self.currency = self.currency or "USD"
@@ -25,11 +28,44 @@ class LumaSalesInvoice(Document):
 	def on_submit(self) -> None:
 		self.outstanding_amount = self.total_amount
 		self.status = "Submitted"
+		self._update_delivery_quantities(1)
 
 	def before_submit(self) -> None:
 		self.outstanding_amount = self.total_amount
 		self.status = "Submitted"
 
 	def on_cancel(self) -> None:
+		self._update_delivery_quantities(-1)
 		self.outstanding_amount = 0
 		self.status = "Cancelled"
+
+	def _validate_delivery_note(self) -> None:
+		delivery = frappe.get_doc("Luma Delivery Note", self.delivery_note)
+		if delivery.status != "Submitted":
+			frappe.throw("A sales invoice requires a submitted delivery note.")
+		if delivery.customer != self.customer or delivery.organization != self.organization:
+			frappe.throw("Invoice customer and organization must match the delivery note.")
+
+		for invoice_item in self.items:
+			delivered_qty = sum(
+				delivery_item.qty - (delivery_item.invoiced_qty or 0)
+				for delivery_item in delivery.items
+				if delivery_item.item == invoice_item.item
+			)
+			if invoice_item.qty > delivered_qty:
+				frappe.throw(
+					f"Invoice quantity for {invoice_item.item} exceeds the uninvoiced delivery quantity."
+				)
+
+	def _update_delivery_quantities(self, direction: int) -> None:
+		if not self.delivery_note:
+			return
+		delivery = frappe.get_doc("Luma Delivery Note", self.delivery_note)
+		for invoice_item in self.items:
+			for delivery_item in delivery.items:
+				if delivery_item.item == invoice_item.item:
+					delivery_item.db_set(
+						"invoiced_qty",
+						(delivery_item.invoiced_qty or 0) + direction * invoice_item.qty,
+					)
+					break

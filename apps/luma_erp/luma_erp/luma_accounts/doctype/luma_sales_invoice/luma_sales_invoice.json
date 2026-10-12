@@ -8,6 +8,7 @@
   "field_order": [
     "customer",
     "organization",
+    "delivery_note",
     "posting_date",
     "due_date",
     "column_break_1",
@@ -31,6 +32,12 @@
       "label": "Organization",
       "options": "Luma Organization",
       "reqd": 1
+    },
+    {
+      "fieldname": "delivery_note",
+      "fieldtype": "Link",
+      "label": "Delivery Note",
+      "options": "Luma Delivery Note"
     },
     {
       "default": "Today",

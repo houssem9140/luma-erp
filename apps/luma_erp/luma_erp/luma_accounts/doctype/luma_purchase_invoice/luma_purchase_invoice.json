@@ -8,6 +8,7 @@
   "field_order": [
     "supplier",
     "organization",
+    "purchase_receipt",
     "posting_date",
     "due_date",
     "column_break_1",
@@ -31,6 +32,12 @@
       "label": "Organization",
       "options": "Luma Organization",
       "reqd": 1
+    },
+    {
+      "fieldname": "purchase_receipt",
+      "fieldtype": "Link",
+      "label": "Purchase Receipt",
+      "options": "Luma Purchase Receipt"
     },
     {
       "default": "Today",
