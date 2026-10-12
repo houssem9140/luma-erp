@@ -192,6 +192,51 @@ def get_operations_summary(organization: str) -> dict:
 	}
 
 
+@frappe.whitelist(allow_guest=False)
+def get_trial_balance(organization: str) -> dict:
+	"""Aggregate submitted journal activity by account for one organization."""
+	entries = frappe.get_list(
+		"Luma Journal Entry",
+		filters={"organization": organization, "docstatus": 1},
+		fields=["name", "currency"],
+		limit=0,
+	)
+	accounts: dict[str, dict[str, float | str]] = {}
+	for entry in entries:
+		journal = frappe.get_doc("Luma Journal Entry", entry.name)
+		for line in journal.accounts:
+			row = accounts.setdefault(
+				line.account,
+				{"account": line.account, "debit": 0.0, "credit": 0.0},
+			)
+			row["debit"] = float(row["debit"]) + float(line.debit or 0)
+			row["credit"] = float(row["credit"]) + float(line.credit or 0)
+
+	lines = []
+	total_debit = 0.0
+	total_credit = 0.0
+	for row in sorted(accounts.values(), key=lambda value: str(value["account"])):
+		debit = float(row["debit"])
+		credit = float(row["credit"])
+		lines.append(
+			{
+				"account": row["account"],
+				"debit": debit,
+				"credit": credit,
+				"balance": debit - credit,
+			}
+		)
+		total_debit += debit
+		total_credit += credit
+
+	return {
+		"lines": lines,
+		"total_debit": total_debit,
+		"total_credit": total_credit,
+		"balanced": total_debit == total_credit,
+	}
+
+
 def _status_summary(doctype: str, organization: str) -> dict[str, int]:
 	documents = frappe.get_list(
 		doctype,

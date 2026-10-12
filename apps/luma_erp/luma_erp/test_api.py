@@ -5,6 +5,7 @@ from luma_erp.api import (
 	get_invoice_summary,
 	get_ledger,
 	get_operations_summary,
+	get_trial_balance,
 	make_purchase_invoice,
 	make_sales_invoice,
 )
@@ -164,6 +165,30 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 
 		self.assertEqual(summary["inventory"]["total_quantity"], 12)
 		self.assertEqual(summary["sales_orders"]["Draft"], 1)
+
+	def test_trial_balance_aggregates_accounts(self) -> None:
+		organization, _item, _customer, _supplier = self._create_master_data("API Trial")
+		entry = frappe.get_doc(
+			{
+				"doctype": "Luma Journal Entry",
+				"organization": organization,
+				"accounts": [
+					{"account": "Cash", "debit": 100},
+					{"account": "Sales", "credit": 100},
+				],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		entry.submit()
+
+		balance = get_trial_balance(organization)
+		lines = {line["account"]: line for line in balance["lines"]}
+
+		self.assertEqual(lines["Cash"]["debit"], 100)
+		self.assertEqual(lines["Cash"]["balance"], 100)
+		self.assertEqual(lines["Sales"]["credit"], 100)
+		self.assertEqual(balance["total_debit"], 100)
+		self.assertEqual(balance["total_credit"], 100)
+		self.assertTrue(balance["balanced"])
 
 	def _create_master_data(self, label: str) -> tuple[str, str, str, str]:
 		suffix = frappe.generate_hash(length=8).upper()
