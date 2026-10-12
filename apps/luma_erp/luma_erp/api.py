@@ -89,3 +89,37 @@ def make_purchase_invoice(purchase_receipt: str) -> dict:
 	)
 	invoice.insert()
 	return invoice.as_dict()
+
+
+@frappe.whitelist(allow_guest=False)
+def get_invoice_summary(organization: str | None = None) -> dict:
+	"""Return invoice counts and amounts for the authenticated dashboard user."""
+	filters = {"organization": organization} if organization else {}
+	return {
+		"sales": _summarize_invoices("Luma Sales Invoice", filters),
+		"purchases": _summarize_invoices("Luma Purchase Invoice", filters),
+	}
+
+
+def _summarize_invoices(doctype: str, filters: dict[str, str]) -> dict:
+	invoices = frappe.get_list(
+		doctype,
+		filters=filters,
+		fields=["status", "total_amount", "outstanding_amount"],
+		limit_page_length=0,
+	)
+	summary = {
+		"count": len(invoices),
+		"draft": 0,
+		"submitted": 0,
+		"cancelled": 0,
+		"total_amount": 0.0,
+		"outstanding_amount": 0.0,
+	}
+	for invoice in invoices:
+		status = (invoice.status or "").lower()
+		if status in summary:
+			summary[status] += 1
+		summary["total_amount"] += float(invoice.total_amount or 0)
+		summary["outstanding_amount"] += float(invoice.outstanding_amount or 0)
+	return summary

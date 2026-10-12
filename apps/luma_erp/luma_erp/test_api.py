@@ -1,7 +1,7 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
-from luma_erp.api import make_purchase_invoice, make_sales_invoice
+from luma_erp.api import get_invoice_summary, make_purchase_invoice, make_sales_invoice
 
 
 class TestLumaInvoiceGeneration(FrappeTestCase):
@@ -86,6 +86,24 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 		invoice = make_sales_invoice(delivery.name)
 
 		self.assertEqual(invoice["items"][0]["rate"], 17)
+
+	def test_invoice_summary_is_scoped_to_organization(self) -> None:
+		organization, item, customer, _supplier = self._create_master_data("API Summary")
+		frappe.get_doc(
+			{
+				"doctype": "Luma Sales Invoice",
+				"customer": customer,
+				"organization": organization,
+				"items": [{"item": item, "qty": 2, "rate": 12}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+
+		summary = get_invoice_summary(organization)
+
+		self.assertEqual(summary["sales"]["count"], 1)
+		self.assertEqual(summary["sales"]["draft"], 1)
+		self.assertEqual(summary["sales"]["total_amount"], 24)
+		self.assertEqual(summary["sales"]["outstanding_amount"], 0)
 
 	def _create_master_data(self, label: str) -> tuple[str, str, str, str]:
 		suffix = frappe.generate_hash(length=8).upper()
