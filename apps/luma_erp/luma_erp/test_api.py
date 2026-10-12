@@ -1,7 +1,13 @@
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
-from luma_erp.api import get_invoice_summary, get_ledger, make_purchase_invoice, make_sales_invoice
+from luma_erp.api import (
+	get_invoice_summary,
+	get_ledger,
+	get_operations_summary,
+	make_purchase_invoice,
+	make_sales_invoice,
+)
 
 
 class TestLumaInvoiceGeneration(FrappeTestCase):
@@ -125,6 +131,39 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 		self.assertEqual(ledger["total_debit"], 80)
 		self.assertEqual(ledger["total_credit"], 80)
 		self.assertTrue(ledger["balanced"])
+
+	def test_operations_summary_is_scoped_to_organization(self) -> None:
+		organization, item, customer, _supplier = self._create_master_data("API Operations")
+		warehouse = frappe.get_doc(
+			{
+				"doctype": "Luma Warehouse",
+				"warehouse_code": f"OPS{frappe.generate_hash(length=6).upper()}",
+				"warehouse_name": "Operations Warehouse",
+				"organization": organization,
+			}
+		).insert(ignore_permissions=True)
+		frappe.get_doc(
+			{
+				"doctype": "Luma Stock Balance",
+				"item": item,
+				"warehouse": warehouse.name,
+				"organization": organization,
+				"quantity": 12,
+			}
+		).insert(ignore_permissions=True)
+		frappe.get_doc(
+			{
+				"doctype": "Luma Sales Order",
+				"customer": customer,
+				"organization": organization,
+				"items": [{"item": item, "qty": 2, "rate": 10}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+
+		summary = get_operations_summary(organization)
+
+		self.assertEqual(summary["inventory"]["total_quantity"], 12)
+		self.assertEqual(summary["sales_orders"]["Draft"], 1)
 
 	def _create_master_data(self, label: str) -> tuple[str, str, str, str]:
 		suffix = frappe.generate_hash(length=8).upper()

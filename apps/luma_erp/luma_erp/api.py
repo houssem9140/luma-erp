@@ -170,3 +170,37 @@ def get_ledger(organization: str, account: str | None = None, limit: int = 100) 
 		"total_credit": total_credit,
 		"balanced": total_debit == total_credit,
 	}
+
+
+@frappe.whitelist(allow_guest=False)
+def get_operations_summary(organization: str) -> dict:
+	"""Return inventory and order status metrics for one organization."""
+	balances = frappe.get_list(
+		"Luma Stock Balance",
+		filters={"organization": organization},
+		fields=["item", "warehouse", "quantity"],
+		limit=0,
+	)
+	return {
+		"inventory": {
+			"line_count": len(balances),
+			"total_quantity": sum(float(balance.quantity or 0) for balance in balances),
+			"items": balances,
+		},
+		"sales_orders": _status_summary("Luma Sales Order", organization),
+		"purchase_orders": _status_summary("Luma Purchase Order", organization),
+	}
+
+
+def _status_summary(doctype: str, organization: str) -> dict[str, int]:
+	documents = frappe.get_list(
+		doctype,
+		filters={"organization": organization},
+		fields=["status"],
+		limit=0,
+	)
+	summary: dict[str, int] = {}
+	for document in documents:
+		status = document.status or "Unknown"
+		summary[status] = summary.get(status, 0) + 1
+	return summary

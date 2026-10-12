@@ -58,6 +58,8 @@ docker exec deployment-backend-1 bench --site frontend execute luma_erp.demo.see
 ```
 Luma Accounts also provides balanced journal entries with draft, submitted,
 and cancelled lifecycle states.
+Authenticated API endpoints provide invoice summaries, ledger lines, and
+organization-scoped inventory and order operational summaries.
 
 ## Licensing and attribution
 
