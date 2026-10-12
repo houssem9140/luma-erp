@@ -69,6 +69,24 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 		self.assertEqual(invoice["purchase_receipt"], receipt.name)
 		self.assertEqual(invoice["items"][0]["qty"], 4)
 
+	def test_invoice_generation_uses_item_standard_rate_without_order(self) -> None:
+		organization, item, customer, _supplier = self._create_master_data("API Standard Rate")
+		frappe.db.set_value("Luma Item", item, "standard_rate", 17)
+		delivery = frappe.get_doc(
+			{
+				"doctype": "Luma Delivery Note",
+				"customer": customer,
+				"organization": organization,
+				"warehouse": "MAIN01",
+				"items": [{"item": item, "qty": 1}],
+			}
+		).insert(ignore_permissions=True, ignore_links=True)
+		delivery.db_set("status", "Submitted")
+
+		invoice = make_sales_invoice(delivery.name)
+
+		self.assertEqual(invoice["items"][0]["rate"], 17)
+
 	def _create_master_data(self, label: str) -> tuple[str, str, str, str]:
 		suffix = frappe.generate_hash(length=8).upper()
 		organization = frappe.get_doc(
@@ -85,6 +103,7 @@ class TestLumaInvoiceGeneration(FrappeTestCase):
 				"item_code": f"APIITEM{suffix}",
 				"item_name": f"{label} Item",
 				"item_group": "Test",
+				"standard_rate": 10,
 			}
 		).insert(ignore_permissions=True)
 		customer = frappe.get_doc(

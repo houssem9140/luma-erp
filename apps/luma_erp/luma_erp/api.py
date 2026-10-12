@@ -13,7 +13,7 @@ def health() -> dict[str, str]:
 	}
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=False)
 def make_sales_invoice(delivery_note: str) -> dict:
 	"""Create a draft sales invoice from the uninvoiced delivery quantity."""
 	delivery = frappe.get_doc("Luma Delivery Note", delivery_note)
@@ -29,7 +29,9 @@ def make_sales_invoice(delivery_note: str) -> dict:
 		{
 			"item": item.item,
 			"qty": item.qty - (item.invoiced_qty or 0),
-			"rate": order_rates.get(item.item, 0),
+			"rate": order_rates.get(
+				item.item, frappe.db.get_value("Luma Item", item.item, "standard_rate") or 0
+			),
 		}
 		for item in delivery.items
 		if item.qty > (item.invoiced_qty or 0)
@@ -50,7 +52,7 @@ def make_sales_invoice(delivery_note: str) -> dict:
 	return invoice.as_dict()
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=False)
 def make_purchase_invoice(purchase_receipt: str) -> dict:
 	"""Create a draft purchase invoice from the uninvoiced receipt quantity."""
 	receipt = frappe.get_doc("Luma Purchase Receipt", purchase_receipt)
@@ -66,7 +68,9 @@ def make_purchase_invoice(purchase_receipt: str) -> dict:
 		{
 			"item": item.item,
 			"qty": item.qty - (item.invoiced_qty or 0),
-			"rate": order_rates.get(item.item, 0),
+			"rate": order_rates.get(
+				item.item, frappe.db.get_value("Luma Item", item.item, "standard_rate") or 0
+			),
 		}
 		for item in receipt.items
 		if item.qty > (item.invoiced_qty or 0)
