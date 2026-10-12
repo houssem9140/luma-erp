@@ -47,6 +47,8 @@ Order lines now track delivered and received quantities so repeated
 fulfillment cannot exceed the original order quantity.
 Invoices can be linked to submitted deliveries or receipts and track the
 quantity already invoiced to prevent duplicate billing.
+Draft sales and purchase invoices can also be generated directly from
+submitted deliveries and receipts.
 
 ## Licensing and attribution
 
