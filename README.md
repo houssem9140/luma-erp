@@ -51,6 +51,11 @@ Draft sales and purchase invoices can also be generated directly from
 submitted deliveries and receipts.
 The repository includes a GitHub Actions workflow that starts the disposable
 Frappe stack and runs the complete Luma test suite on pushes and pull requests.
+For local demonstrations, seed the standard master data with:
+
+```powershell
+docker exec deployment-backend-1 bench --site frontend execute luma_erp.demo.seed_demo_data
+```
 
 ## Licensing and attribution
 
