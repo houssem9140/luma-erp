@@ -13,7 +13,10 @@ dist/
 build/
 *.egg-info/
 node_modules/
+*.tsbuildinfo
 .venv/
 venv/
 sites/
 logs/
+luma.db
+backend/luma.db
